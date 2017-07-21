@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.aalelyuh.myconverter.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="@dimen/main_padding">
+
+        <EditText
+            android:id="@+id/summ_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/convert_sum"
+            android:textSize="@dimen/main_text_size"
+            android:inputType="numberDecimal"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:padding="@dimen/main_padding"
+        >
+
+        <EditText
+            android:id="@+id/val_from"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Из валюты"
+            android:textSize="@dimen/main_text_size"
+            android:inputType="textCapCharacters" />
+
+        <EditText
+            android:id="@+id/val_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="В валюту"
+            android:textSize="@dimen/main_text_size"
+            android:inputType="textCapCharacters"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.5"
+        android:orientation="vertical"
+        android:padding="@dimen/main_padding">
+
+        <EditText
+            android:id="@+id/summ_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/converted_sum"
+            android:inputType="number"
+            android:textSize="@dimen/main_text_size"
+            android:focusable="false"/>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="25dp"
+            android:text="Конвертировать" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/course_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:text="Нет загруженных курсов!" />
+    </LinearLayout>
+
+</LinearLayout>
