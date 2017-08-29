@@ -122,6 +122,7 @@ public class DownloadService extends IntentService {
         return false;
     }
 
+    // переделать по-другому, убрать отправку уведомлений через ресивер
     /*private void sendResult(boolean isResult, String courseDate) {
         Intent courseLoadResultIntent = new Intent();
         courseLoadResultIntent.setAction(isResult ? DOWNLOAD_COMPLETE : DOWNLOAD_FAIL);
