@@ -4,12 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.aalelyuh.myconverter.ui.MainActivity;
+
 import java.lang.ref.WeakReference;
 
 /**
  * Created by Lelyuh-AA on 18.07.2017.
  */
 
+@Deprecated
 public class MyReciever extends BroadcastReceiver{
 
     private WeakReference<MainActivity> mainActivityRef;
@@ -32,8 +35,7 @@ public class MyReciever extends BroadcastReceiver{
             } else if (action.equals(DownloadService.DOWNLOAD_FAIL)) {
                 mainActivity.notifyDownload("");
             }
-            ;
-        };
+        }
 
     }
 }

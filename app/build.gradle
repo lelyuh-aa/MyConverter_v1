@@ -28,4 +28,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile files('libs/simple-xml-2.7.1.jar')
+
+    compile 'com.arello-mobile:moxy:1.1.1'
+    compile 'com.arello-mobile:moxy-app-compat:1.1.1'
+    provided 'com.arello-mobile:moxy-compiler:1.1.1'
 }

@@ -29,6 +29,7 @@ import java.net.URL;
 
 public class DownloadService extends IntentService {
 
+    public static final String COURSE_URL = "http://www.cbr.ru/scripts/XML_daily.asp";
     public static final String DOWNLOAD_URL = "DOWNLOAD_URL";
     public static final String DOWNLOAD_COMPLETE = "DOWNLOAD_COMPLETE";
     public static final String DOWNLOAD_FAIL = "DOWNLOAD_FAIL";
@@ -42,74 +43,70 @@ public class DownloadService extends IntentService {
 
         // проверка на доступность Интернета (мобильный, Wi-Fi)
         if (!checkNetwork()) {
-            sendResult(false, "");
+            //sendResult(false, "");
             return;
         }
 
         String courseDate = "";
-        String courseUrl = intent.getStringExtra(DOWNLOAD_URL);
 
-        if (!courseUrl.isEmpty()) {
-            try {
-                // создаем удаленное соединение
-                URL url = new URL(courseUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                InputStream stream = connection.getInputStream();
-                Reader reader = new InputStreamReader(stream);
+        try {
+            // создаем удаленное соединение
+            URL url = new URL(COURSE_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream stream = connection.getInputStream();
+            Reader reader = new InputStreamReader(stream,"cp1251");
 
-                // десериализация XML
-                Persister serializer = new Persister();
-                CourseList courseList = serializer.read(CourseList.class, reader, false);
+            // десериализация XML
+            Persister serializer = new Persister();
+            CourseList courseList = serializer.read(CourseList.class, reader, false);
 
-                // сохранение результата в БД
-                if (courseList.getCourseList().size() > 0) {
+            // сохранение результата в БД
+            if (courseList.getCourseList().size() > 0) {
 
-                    MySQLiteHelper helper = new MySQLiteHelper(this);
-                    ContentValues cValues = new ContentValues();
-                    int rowCount = 0;
+                MySQLiteHelper helper = new MySQLiteHelper(this);
+                ContentValues cValues = new ContentValues();
+                int rowCount = 0;
 
-                    // подготовка к удалению текущих курсов
-                    Cursor cursor = helper.getReadableDatabase().query(
-                            CoursesTable.TABLE_COURSES,
-                            new String[] {CoursesTable.COLUMN_COURSE_ID},
-                            null,null,null,null,
-                            CoursesTable.COLUMN_COURSE_ID + " desc"
-                    );
+                // подготовка к удалению текущих курсов
+                Cursor cursor = helper.getReadableDatabase().query(
+                        CoursesTable.TABLE_COURSES,
+                        new String[] {CoursesTable.COLUMN_COURSE_ID},
+                        null,null,null,null,
+                        CoursesTable.COLUMN_COURSE_ID + " desc"
+                );
 
-                    if (cursor.getCount() > 0) {
-                        cursor.move(1);
-                        rowCount = cursor.getInt(cursor.getColumnIndex(CoursesTable.COLUMN_COURSE_ID));
-                        cursor.close();
-                    }
-
-                    // добавление новых курсов
-                    for (Course course : courseList.getCourseList()) {
-                        cValues.put(CoursesTable.COLUMN_COURSE_DATE, courseList.getCourseDate());
-                        cValues.put(CoursesTable.COLUMN_COURSE_CODE, course.getCode());
-                        cValues.put(CoursesTable.COLUMN_COURSE_NOMINAL, course.getNominal());
-                        cValues.put(CoursesTable.COLUMN_COURSE_NAME, course.getName());
-                        cValues.put(CoursesTable.COLUMN_COURSE_VALUE, course.getValue());
-                        helper.getWritableDatabase().insert(CoursesTable.TABLE_COURSES, null, cValues);
-                        cValues.clear();
-                    }
-
-                    // после успешной записи новых курсов удалим из базы старые
-                    helper.getWritableDatabase().delete(
-                            CoursesTable.TABLE_COURSES,
-                            CoursesTable.COLUMN_COURSE_ID + " <=?",
-                            new String[] {Integer.toString(rowCount)}
-                    );
+                if (cursor.getCount() > 0) {
+                    cursor.move(1);
+                    rowCount = cursor.getInt(cursor.getColumnIndex(CoursesTable.COLUMN_COURSE_ID));
+                    cursor.close();
                 }
 
-                // отправка уведомления об успешной загрузке курсов
-                sendResult(true, courseList.getCourseDate());
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendResult(false, "");
+                // добавление новых курсов
+                for (Course course : courseList.getCourseList()) {
+                    cValues.put(CoursesTable.COLUMN_COURSE_DATE, courseList.getCourseDate());
+                    cValues.put(CoursesTable.COLUMN_COURSE_CODE, course.getCode());
+                    cValues.put(CoursesTable.COLUMN_COURSE_NOMINAL, course.getNominal());
+                    cValues.put(CoursesTable.COLUMN_COURSE_NAME, course.getName());
+                    cValues.put(CoursesTable.COLUMN_COURSE_VALUE, course.getValue());
+                    helper.getWritableDatabase().insert(CoursesTable.TABLE_COURSES, null, cValues);
+                    cValues.clear();
+                }
+
+                // после успешной записи новых курсов удалим из базы старые
+                helper.getWritableDatabase().delete(
+                        CoursesTable.TABLE_COURSES,
+                        CoursesTable.COLUMN_COURSE_ID + " <=?",
+                        new String[] {Integer.toString(rowCount)}
+                );
             }
+
+            // отправка уведомления об успешной загрузке курсов
+            //sendResult(true, courseList.getCourseDate());
+        } catch (Exception e) {
+            e.printStackTrace();
+            //sendResult(false, "");
         }
-        else
-            sendResult(false, "");
+
     }
 
     private boolean checkNetwork() {
@@ -123,14 +120,14 @@ public class DownloadService extends IntentService {
         }
 
         return false;
-    };
+    }
 
-    private void sendResult(boolean isResult, String courseDate) {
+    /*private void sendResult(boolean isResult, String courseDate) {
         Intent courseLoadResultIntent = new Intent();
         courseLoadResultIntent.setAction(isResult ? DOWNLOAD_COMPLETE : DOWNLOAD_FAIL);
         if (!courseDate.isEmpty()) {
             courseLoadResultIntent.putExtra(CoursesTable.COLUMN_COURSE_DATE, courseDate);
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(courseLoadResultIntent);
-    }
+    }*/
 }
