@@ -3,6 +3,7 @@ package com.example.aalelyuh.myconverter.mvp.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.wifi.aware.AttachCallback;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -22,9 +23,11 @@ public class MainPresenter extends MvpPresenter<IMainView>{
     public static final String NATIVE_VALUTE = "RUB";
 
     private MySQLiteHelper mHelper;
+    private AppContext mAppContext = AppContext.getAppContext();
 
     public MainPresenter() {
         // инициализация хэлпера
+        //mAppContext = AppContext.getAppContext();
         mHelper = new MySQLiteHelper(AppContext.getAppContext());
     }
 
@@ -32,15 +35,12 @@ public class MainPresenter extends MvpPresenter<IMainView>{
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
 
+        // запуск сервиса только при первом аттаче активити
         //Context context = AppContext.getAppContext();
-
-        // инициализация хэлпера
-        //mHelper = new MySQLiteHelper(context);
-
-        // запуск сервиса только при первом запуске активити
-        /*Intent intent = new Intent(context, DownloadService.class);
-        context.startService(intent);*/
+        Intent intent = new Intent(mAppContext, DownloadService.class);
+        mAppContext.startService(intent);
     }
+
 
     public boolean checkInputFields (String inputSum, String valuteIn, String valuteOut) {
 
